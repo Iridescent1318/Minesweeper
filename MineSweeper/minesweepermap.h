@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <queue>
+#include <set>
 #include <QDebug>
 #include <QString>
 

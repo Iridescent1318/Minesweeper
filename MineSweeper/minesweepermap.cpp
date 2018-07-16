@@ -157,6 +157,7 @@ void MineSweeperMap::Reset(){ //Reset the map
         map_[i].SetClickedStatus(false);
         map_[i].SetSafeStatus(true);
         map_[i].SetMarkStatus(false);
+        map_[i].SetInQueueStatus(false);
         map_[i].setText("");
         map_[i].setStyleSheet("border-width:1px;"
                               "border:none;"
@@ -191,109 +192,229 @@ void MineSweeperMap::LeftClickOnBlock(Block* block){ //Left-click event
         // Use queue to make breath-first-search
         block->SetClickedStatus(true);
         std::queue <Block*> blocks_to_open;
-        int search_num = 0;
         blocks_to_open.push(block);
+        block->SetInQueueStatus(true);
         while(!blocks_to_open.empty()){ // Control the depth
             if(blocks_to_open.front()->GetSafeStatus()){ // won't open mines
                 blocks_to_open.front()->SetClickedStatus(true);// Mark as clicked(visited)
                 if(blocks_to_open.front()->GetMinesAround() == 0){ //Open 0-mine-around blocks and its neighbors
                     if(blocks_to_open.front()->GetPosition() == INSIDE){
-                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()) //Right
+                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+1)->GetInQueueStatus()){ //Right
                             blocks_to_open.push(blocks_to_open.front()+1);
-                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()) //Left
+                            (blocks_to_open.front()+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-1)->GetInQueueStatus()) { //Left
                             blocks_to_open.push(blocks_to_open.front()-1);
-                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()) //Down
+                            (blocks_to_open.front()-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_)->GetInQueueStatus()) { //Down
                             blocks_to_open.push(blocks_to_open.front()+map_width_);
-                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()) //Up
+                            (blocks_to_open.front()+map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_)->GetInQueueStatus()) { //Up
                             blocks_to_open.push(blocks_to_open.front()-map_width_);
-                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()) //RU
+                            (blocks_to_open.front()-map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_+1)->GetInQueueStatus()) { //RU
                             blocks_to_open.push(blocks_to_open.front()-map_width_+1);
-                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()) //LU
+                            (blocks_to_open.front()-map_width_+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_-1)->GetInQueueStatus()) { //LU
                             blocks_to_open.push(blocks_to_open.front()-map_width_-1);
-                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()) //LD
+                            (blocks_to_open.front()-map_width_-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_-1)->GetInQueueStatus()) { //LD
                             blocks_to_open.push(blocks_to_open.front()+map_width_-1);
-                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()) //RD
+                            (blocks_to_open.front()+map_width_-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_+1)->GetInQueueStatus()) { //RD
                             blocks_to_open.push(blocks_to_open.front()+map_width_+1);
+                            (blocks_to_open.front()+map_width_+1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == MARGIN_UP){
-                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()) //Right
+                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+1)->GetInQueueStatus()){ //Right
                             blocks_to_open.push(blocks_to_open.front()+1);
-                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()) //Left
+                            (blocks_to_open.front()+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-1)->GetInQueueStatus()) { //Left
                             blocks_to_open.push(blocks_to_open.front()-1);
-                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()) //Down
+                            (blocks_to_open.front()-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_)->GetInQueueStatus()) { //Down
                             blocks_to_open.push(blocks_to_open.front()+map_width_);
-                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()) //LD
+                            (blocks_to_open.front()+map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_-1)->GetInQueueStatus()) { //LD
                             blocks_to_open.push(blocks_to_open.front()+map_width_-1);
-                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()) //RD
+                            (blocks_to_open.front()+map_width_-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_+1)->GetInQueueStatus()) { //RD
                             blocks_to_open.push(blocks_to_open.front()+map_width_+1);
+                            (blocks_to_open.front()+map_width_+1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == MARGIN_DOWN){
-                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()) //Right
+                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+1)->GetInQueueStatus()){ //Right
                             blocks_to_open.push(blocks_to_open.front()+1);
-                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()) //Left
+                            (blocks_to_open.front()+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-1)->GetInQueueStatus()) { //Left
                             blocks_to_open.push(blocks_to_open.front()-1);
-                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()) //Up
+                            (blocks_to_open.front()-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_)->GetInQueueStatus()) { //Up
                             blocks_to_open.push(blocks_to_open.front()-map_width_);
-                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()) //RU
+                            (blocks_to_open.front()-map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_+1)->GetInQueueStatus()) { //RU
                             blocks_to_open.push(blocks_to_open.front()-map_width_+1);
-                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()) //LU
+                            (blocks_to_open.front()-map_width_+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_-1)->GetInQueueStatus()) { //LU
                             blocks_to_open.push(blocks_to_open.front()-map_width_-1);
+                            (blocks_to_open.front()-map_width_-1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == MARGIN_LEFT){
-                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()) //Right
+                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+1)->GetInQueueStatus()){ //Right
                             blocks_to_open.push(blocks_to_open.front()+1);
-                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()) //Down
+                            (blocks_to_open.front()+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_)->GetInQueueStatus()) { //Down
                             blocks_to_open.push(blocks_to_open.front()+map_width_);
-                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()) //Up
+                            (blocks_to_open.front()+map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_)->GetInQueueStatus()) { //Up
                             blocks_to_open.push(blocks_to_open.front()-map_width_);
-                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()) //RU
+                            (blocks_to_open.front()-map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_+1)->GetInQueueStatus()) { //RU
                             blocks_to_open.push(blocks_to_open.front()-map_width_+1);
-                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()) //RD
+                            (blocks_to_open.front()-map_width_+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_+1)->GetInQueueStatus()) { //RD
                             blocks_to_open.push(blocks_to_open.front()+map_width_+1);
+                            (blocks_to_open.front()+map_width_+1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == MARGIN_RIGHT){
-                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()) //Left
+                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-1)->GetInQueueStatus()) { //Left
                             blocks_to_open.push(blocks_to_open.front()-1);
-                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()) //Down
+                            (blocks_to_open.front()-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_)->GetInQueueStatus()) { //Down
                             blocks_to_open.push(blocks_to_open.front()+map_width_);
-                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()) //Up
+                            (blocks_to_open.front()+map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_)->GetInQueueStatus()) { //Up
                             blocks_to_open.push(blocks_to_open.front()-map_width_);
-                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()) //LU
+                            (blocks_to_open.front()-map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_-1)->GetInQueueStatus()) { //LU
                             blocks_to_open.push(blocks_to_open.front()-map_width_-1);
-                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()) //LD
+                            (blocks_to_open.front()-map_width_-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_-1)->GetInQueueStatus()) { //LD
                             blocks_to_open.push(blocks_to_open.front()+map_width_-1);
+                            (blocks_to_open.front()+map_width_-1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == CORNER_LU){
-                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()) //Right
+                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+1)->GetInQueueStatus()){ //Right
                             blocks_to_open.push(blocks_to_open.front()+1);
-                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()) //Down
+                            (blocks_to_open.front()+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_)->GetInQueueStatus()) { //Down
                             blocks_to_open.push(blocks_to_open.front()+map_width_);
-                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()) //RD
+                            (blocks_to_open.front()+map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_+1)->GetClickedStatus() && (blocks_to_open.front()+map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_+1)->GetInQueueStatus()) { //RD
                             blocks_to_open.push(blocks_to_open.front()+map_width_+1);
+                            (blocks_to_open.front()+map_width_+1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == CORNER_LD){
-                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()) //Right
+                        if(!(blocks_to_open.front()+1)->GetClickedStatus() && (blocks_to_open.front()+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+1)->GetInQueueStatus()){ //Right
                             blocks_to_open.push(blocks_to_open.front()+1);
-                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()) //Up
+                            (blocks_to_open.front()+1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_)->GetInQueueStatus()) { //Up
                             blocks_to_open.push(blocks_to_open.front()-map_width_);
-                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()) //RU
+                            (blocks_to_open.front()-map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_+1)->GetClickedStatus() && (blocks_to_open.front()-map_width_+1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_+1)->GetInQueueStatus()) { //RU
                             blocks_to_open.push(blocks_to_open.front()-map_width_+1);
+                            (blocks_to_open.front()-map_width_+1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == CORNER_RU){
-                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()) //Left
+                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-1)->GetInQueueStatus()) { //Left
                             blocks_to_open.push(blocks_to_open.front()-1);
-                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()) //Down
+                            (blocks_to_open.front()-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_)->GetClickedStatus() && (blocks_to_open.front()+map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_)->GetInQueueStatus()) { //Down
                             blocks_to_open.push(blocks_to_open.front()+map_width_);
-                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()) //LD
+                            (blocks_to_open.front()+map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()+map_width_-1)->GetClickedStatus() && (blocks_to_open.front()+map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()+map_width_-1)->GetInQueueStatus()) { //LD
                             blocks_to_open.push(blocks_to_open.front()+map_width_-1);
+                            (blocks_to_open.front()+map_width_-1)->SetInQueueStatus(true);
+                        }
                     }
                     if(blocks_to_open.front()->GetPosition() == CORNER_RD){
-                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()) //Left
+                        if(!(blocks_to_open.front()-1)->GetClickedStatus() && (blocks_to_open.front()-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-1)->GetInQueueStatus()) { //Left
                             blocks_to_open.push(blocks_to_open.front()-1);
-                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()) //Up
+                            (blocks_to_open.front()-1)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_)->GetClickedStatus() && (blocks_to_open.front()-map_width_)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_)->GetInQueueStatus()) { //Up
                             blocks_to_open.push(blocks_to_open.front()-map_width_);
-                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()) //LU
+                            (blocks_to_open.front()-map_width_)->SetInQueueStatus(true);
+                        }
+                        if(!(blocks_to_open.front()-map_width_-1)->GetClickedStatus() && (blocks_to_open.front()-map_width_-1)->GetSafeStatus()
+                                && !(blocks_to_open.front()-map_width_-1)->GetInQueueStatus()) { //LU
                             blocks_to_open.push(blocks_to_open.front()-map_width_-1);
+                            (blocks_to_open.front()-map_width_-1)->SetInQueueStatus(true);
+                        }
                     }
                 }
             }

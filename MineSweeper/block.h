@@ -18,6 +18,7 @@ public:
     bool GetSafeStatus() const {return is_safe_;}
     bool GetClickedStatus() const {return is_clicked_;}
     bool GetMarkStatus() const {return is_marked_;}
+    bool GetInQueueStatus() const {return is_in_queue_;}
     bool GetBoomStatus() const {return boom_;}
     BlockPosition GetPosition() const {return position_;}
     void SetCoorX(int coor_x) {coor_x_ = coor_x;}
@@ -26,6 +27,7 @@ public:
     void SetMinesAround(int mines_around) {mines_around_ = mines_around;}
     void SetSafeStatus(bool is_safe) {is_safe_ = is_safe;}
     void SetMarkStatus(bool is_marked) {is_marked_ = is_marked;}
+    void SetInQueueStatus(bool is_in_queue) {is_in_queue_ = is_in_queue;}
     void SetPosition(BlockPosition position) {position_ = position;}
     void mouseReleaseEvent(QMouseEvent *e);
 signals:
@@ -38,6 +40,7 @@ protected:
     bool is_safe_;
     bool is_clicked_;
     bool is_marked_;
+    bool is_in_queue_;
     bool boom_;
     BlockPosition position_;
 };

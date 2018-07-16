@@ -12,9 +12,9 @@ Game::Game(QWidget *parent = 0 ) : QMainWindow(parent) {
 
     custom_dialog_.setFixedSize(300,250);
     custom_dialog_.setWindowTitle("Custom game");
-    custom_label_[0].setText("Width:(10-99)");
-    custom_label_[1].setText("Height:(10-99)");
-    custom_label_[2].setText("Mines:(10-999)");
+    custom_label_[0].setText("Width:(10-30)");
+    custom_label_[1].setText("Height:(10-24)");
+    custom_label_[2].setText("Mines:(10-668)");
     for(int i = 0; i < 3; i ++){
         custom_set_[i].setParent(&custom_dialog_);
         custom_label_[i].setParent(&custom_dialog_);
@@ -128,7 +128,7 @@ void Game::keyReleaseEvent(QKeyEvent *event){
         delete this->ms_map_;
         this->NewGame(HARD);
     }
-    if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_H)){
+    if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_C)){
         custom_dialog_.exec();
     }
     if(event->key() == Qt::Key_F5)
@@ -183,8 +183,8 @@ void Game::NewCustomGame(){
     }
     int temp_input[3] = {custom_set_[0].text().toInt(),
                          custom_set_[1].text().toInt(), custom_set_[2].text().toInt()};
-    if(all_digit && temp_input[0] >= 10 && temp_input[0] <= 99 && temp_input[1] >= 10 && temp_input[1] <= 99
-            && temp_input[2] >= 10 && temp_input[2] <= 999 && temp_input[2] < temp_input[0]*temp_input[1]){
+    if(all_digit && temp_input[0] >= 10 && temp_input[0] <= 30 && temp_input[1] >= 10 && temp_input[1] <= 24
+            && temp_input[2] >= 10 && temp_input[2] <= 668 && temp_input[2] < temp_input[0]*temp_input[1]){
         delete ms_map_;
         ms_map_ = new MineSweeperMap(this, CUSTOM, custom_set_[0].text().toInt(),
                 custom_set_[1].text().toInt(), custom_set_[2].text().toInt());

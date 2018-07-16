@@ -8,21 +8,9 @@ Block::Block(): QPushButton(){
     is_safe_ = true;
     is_clicked_ = false;
     is_marked_ = false;
+    is_in_queue_ = false;
     boom_ = false;
-    this->resize(30,30);
-}
-
-Block::Block(int coor_x = 0, int coor_y = 0) : QPushButton()
-{
-    coor_x_ = coor_x;
-    coor_y_ = coor_y;
-    mines_around_ = 0;
-    position_ = INSIDE;
-    is_safe_ = true;
-    is_clicked_ = false;
-    is_marked_ = false;
-    boom_ = false;
-    this->resize(30,30);
+    this->resize(29,29);
 }
 
 
